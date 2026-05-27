@@ -49,6 +49,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,14 +61,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
@@ -251,21 +255,23 @@ fun AppSettingsScreen(
                     viewModel.setConversationalAwarenessVolume(conversationalAwarenessVolume)
                 }
 
-                StyledSlider(
-                    label = stringResource(R.string.conversational_awareness_volume),
-                    value = conversationalAwarenessVolume,
-                    valueRange = 10f..85f,
-                    snapPoints = listOf(44f),
-                    startLabel = "10%",
-                    endLabel = "85%",
-                    onValueChange = { newValue ->
-                        viewModel.setConversationalAwarenessVolume(
-                            newValue
-                        )
-                    },
-                    independent = true,
-                    enabled = state.isPremium
-                )
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    StyledSlider(
+                        label = stringResource(R.string.conversational_awareness_volume),
+                        value = conversationalAwarenessVolume,
+                        valueRange = 10f..85f,
+                        snapPoints = listOf(44f),
+                        startLabel = "10%",
+                        endLabel = "85%",
+                        onValueChange = { newValue ->
+                            viewModel.setConversationalAwarenessVolume(
+                                newValue
+                            )
+                        },
+                        independent = true,
+                        enabled = state.isPremium
+                    )
+                }
 
 //            if (!BuildConfig.PLAY_BUILD) {
 //                Spacer(modifier = Modifier.height(16.dp))
@@ -579,6 +585,32 @@ fun AppSettingsScreen(
                 navController = navController,
                 independent = true
             )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // טקסט קרדיט "Mod By HPower"
+                Text(
+                    text = "Build By HPower",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily.Cursive,
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                // סימן זכויות יוצרים
+                Text(
+                    text = "©",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily.Cursive,
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(bottomPadding))
 
