@@ -40,6 +40,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -60,11 +61,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -334,23 +337,26 @@ fun AccessibilitySettingsScreen(viewModel: AirPodsViewModel, navController: NavC
                 state.controlStates[AACPManager.Companion.ControlCommandIdentifiers.CHIME_VOLUME]?.getOrNull(
                     0
                 )?.toFloat() ?: 75f
-            StyledSlider(
-                label = stringResource(R.string.tone_volume),
-                description = stringResource(R.string.tone_volume_description),
-                value = toneVolumeValue,
-                onValueChange = {
-                    viewModel.setControlCommandValue(
-                        AACPManager.Companion.ControlCommandIdentifiers.CHIME_VOLUME,
-                        byteArrayOf(it.toInt().toByte(), 0x50)
-                    )
-                },
-                valueRange = 0f..100f,
-                snapPoints = listOf(75f),
-                startIcon = "\uDBC0\uDEA1",
-                endIcon = "\uDBC0\uDEA9",
-                independent = true,
-                enabled = state.isPremium
-            )
+                
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                StyledSlider(
+                    label = stringResource(R.string.tone_volume),
+                    description = stringResource(R.string.tone_volume_description),
+                    value = toneVolumeValue,
+                    onValueChange = {
+                        viewModel.setControlCommandValue(
+                            AACPManager.Companion.ControlCommandIdentifiers.CHIME_VOLUME,
+                            byteArrayOf(it.toInt().toByte(), 0x50)
+                        )
+                    },
+                    valueRange = 0f..100f,
+                    snapPoints = listOf(75f),
+                    startIcon = "\uDBC0\uDEA1",
+                    endIcon = "\uDBC0\uDEA9",
+                    independent = true,
+                    enabled = state.isPremium
+                )
+            }
 
             if (state.capabilities.contains(Capability.SWIPE_FOR_VOLUME)) {
                 val volumeSwipeEnabled =
