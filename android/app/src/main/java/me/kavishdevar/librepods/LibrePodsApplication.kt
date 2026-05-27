@@ -19,23 +19,33 @@ class LibrePodsApplication: Application(), XposedServiceHelper.OnServiceListener
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         super<Application>.onCreate()
-
+        
+        // כפיית מצב שבו האפליקציה חושבת ש-Xposed פעיל ויש הרשאות בלוטוס
+        XposedState.isAvailable = true
+        XposedState.bluetoothScopeEnabled = true
     }
 
     override fun onResume(owner: LifecycleOwner) {
         BillingManager.provider.queryPurchases()
-        XposedState.isAvailable = XposedServiceHolder.service != null
-        XposedState.bluetoothScopeEnabled = XposedServiceHolder.service?.scope?.contains("com.google.android.bluetooth") == true || XposedServiceHolder.service?.scope?.contains("com.android.bluetooth") == true
+        
+        // עוקף את הבדיקות המקוריות - הכל פתוח וזמין
+        XposedState.isAvailable = true
+        XposedState.bluetoothScopeEnabled = true
     }
 
     override fun onServiceBind(service: XposedService) {
         XposedServiceHolder.service = service
+        
+        // תמיד True
         XposedState.isAvailable = true
-        XposedState.bluetoothScopeEnabled = XposedServiceHolder.service?.scope?.contains("com.google.android.bluetooth") == true || XposedServiceHolder.service?.scope?.contains("com.android.bluetooth") == true
+        XposedState.bluetoothScopeEnabled = true
     }
 
     override fun onServiceDied(p0: XposedService) {
         XposedServiceHolder.service = null
-        XposedState.isAvailable = false
+        
+        // גם אם השירות מתנתק, האפליקציה תמשיך לאפשר את התכונות
+        XposedState.isAvailable = true
+        XposedState.bluetoothScopeEnabled = true
     }
 }
