@@ -594,7 +594,7 @@ fun AppSettingsScreen(
 
                 // טקסט קרדיט "Mod By HPower"
                 Text(
-                    text = "Build By HPower",
+                    text = "Mod By HPower",
                     fontSize = 22.sp,
                     fontFamily = FontFamily.Cursive,
                     fontStyle = FontStyle.Italic,
